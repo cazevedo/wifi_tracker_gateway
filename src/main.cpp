@@ -15,9 +15,9 @@
 // Message packet;
 Message *packetPtr;
 // Set a custom base MAC address
-// The WiFi MAC address is generated sequentially by adding 1 to the base MAC address
-// Therefore the MAC address of the gateway will be CC:CC:CC:CC:CC:CC
-uint8_t CustomMacAddress[] = {0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCB};
+// In AP mode is added 1 to the base MAC address: CC:CC:CC:CC:CC:CD
+// In ST mode is added 0 to the base MAC address: CC:CC:CC:CC:CC:CC
+uint8_t CustomMacAddress[] = {0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC};
 
 // Init ESP Now with fallback
 void InitESPNow() {
@@ -79,13 +79,22 @@ void setup() {
   esp_base_mac_addr_set(&CustomMacAddress[0]);
   // esp_wifi_set_mac(ESP_IF_WIFI_STA, &customMacAdress[0]);
 
-  //Set device in AP mode to begin with
-  WiFi.mode(WIFI_AP);
-  // configure device AP mode
-  configDeviceAP();
-  // This is the mac address of the Slave in AP Mode
-  Serial.print("AP MAC: ");
-  Serial.println(WiFi.softAPmacAddress());
+  // //Set device in AP mode to begin with
+  // WiFi.mode(WIFI_AP);
+  // // configure device AP mode
+  // configDeviceAP();
+  // // This is the mac address of the Slave in AP Mode
+  // Serial.print("AP MAC: ");
+  // Serial.println(WiFi.softAPmacAddress());
+
+  //Set device in STA mode to begin with
+  WiFi.mode(WIFI_STA);
+  Serial.println("ESPNow Node");
+
+  // This is the mac address of the Node in Station Mode
+  Serial.print("Node MAC: ");
+  Serial.println(WiFi.macAddress());
+
   // Init ESPNow with a fallback logic
   InitESPNow();
   // Once ESPNow is successfully Init, we will register for recv CB to

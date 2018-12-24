@@ -14,6 +14,10 @@
 
 // Message packet;
 Message *packetPtr;
+// Set a custom base MAC address
+// The WiFi MAC address is generated sequentially by adding 1 to the base MAC address
+// Therefore the MAC address of the gateway will be CC:CC:CC:CC:CC:CC
+uint8_t CustomMacAddress[] = {0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCB};
 
 // Init ESP Now with fallback
 void InitESPNow() {
@@ -51,12 +55,16 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
   char macStr[18];
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.print("MAC address : "); Serial.println(macStr);
+  Serial.print("\nMAC address : "); Serial.println(macStr);
   packetPtr = (Message*) data;
   // Serial.print("Last Packet Recv Data: "); Serial.println(*data);
+  Serial.print("Seq: ");
   Serial.println((*packetPtr).seq);
+  Serial.print("Timestamp: ");
   Serial.println((*packetPtr).timestamp);
+  Serial.print("CRC: ");
   Serial.println((*packetPtr).crc);
+  Serial.println(" ");
 }
 
 void setup() {
@@ -66,6 +74,11 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("ESPNow Gateway");
+
+  // Set Custom MAC Address
+  esp_base_mac_addr_set(&CustomMacAddress[0]);
+  // esp_wifi_set_mac(ESP_IF_WIFI_STA, &customMacAdress[0]);
+
   //Set device in AP mode to begin with
   WiFi.mode(WIFI_AP);
   // configure device AP mode
